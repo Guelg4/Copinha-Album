@@ -11,5 +11,12 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+/* Desativa reCAPTCHA Enterprise no Auth */
 const auth = firebase.auth();
-const db   = firebase.firestore();
+auth.settings.appVerificationDisabledForTesting = false;
+
+/* Força uso do reCAPTCHA v2 em vez do Enterprise */
+firebase.auth().useDeviceLanguage();
+
+const db = firebase.firestore();
