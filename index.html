@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Álbum Copinha 2026</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a0a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Álbum Copinha">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── TELA DE LOGIN ── -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg">
+    <div class="login-shapes">
+      <div class="shape s1"></div><div class="shape s2"></div>
+      <div class="shape s3"></div><div class="shape s4"></div>
+      <div class="shape s5"></div><div class="shape s6"></div>
+    </div>
+  </div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-trophy">🏆</div>
+      <div class="login-title">ÁLBUM</div>
+      <div class="login-sub">COPINHA GIL RODRIGUES 2026</div>
+    </div>
+    <div class="login-form">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="inp-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div id="login-err" class="login-err" style="display:none"></div>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+      <div class="login-divider"><span>ou</span></div>
+      <button class="btn-secondary" onclick="showRegister()">Criar conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TELA DE CADASTRO ── -->
+<div id="screen-register" class="screen">
+  <div class="login-bg">
+    <div class="login-shapes">
+      <div class="shape s1"></div><div class="shape s2"></div>
+      <div class="shape s3"></div><div class="shape s4"></div>
+    </div>
+  </div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-title" style="font-size:2rem">CRIAR CONTA</div>
+      <div class="login-sub">ÁLBUM COPINHA 2026</div>
+    </div>
+    <div class="login-form">
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="inp-nome" placeholder="Seu nome" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="inp-reg-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="inp-reg-pass" placeholder="mínimo 6 caracteres" autocomplete="new-password">
+      </div>
+      <div id="reg-err" class="login-err" style="display:none"></div>
+      <button class="btn-primary" onclick="doRegister()">Criar conta</button>
+      <button class="btn-ghost" onclick="showLogin()">← Voltar ao login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TELA PRINCIPAL DO ÁLBUM ── -->
+<div id="screen-album" class="screen">
+
+  <!-- Topbar -->
+  <header class="album-header">
+    <div class="album-header-left">
+      <div class="album-logo-wrap">
+        <span class="album-logo-icon">🏆</span>
+        <div>
+          <div class="album-logo-title">ÁLBUM COPINHA</div>
+          <div class="album-logo-sub">GIL RODRIGUES 2026</div>
+        </div>
+      </div>
+    </div>
+    <div class="album-header-right">
+      <div class="pacote-info" id="pacote-info">
+        <span class="pacote-icon">📦</span>
+        <span id="pacote-count">0</span> pacotes
+      </div>
+      <button class="btn-abrir-pacote" id="btn-abrir" onclick="abrirPacote()">Abrir Pacote</button>
+      <div class="user-menu" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-name" id="user-name-label">—</div>
+          <div class="user-email" id="user-email-label">—</div>
+          <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+          <button onclick="doLogout()">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progresso geral -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-inner" id="prog-bar"></div>
+    <span class="progress-label" id="prog-label">0 / 0 figurinhas</span>
+  </div>
+
+  <!-- Abas de navegação -->
+  <nav class="album-nav">
+    <button class="anav-btn active" onclick="setTab('album')" id="tab-album">📖 Álbum</button>
+    <button class="anav-btn" onclick="setTab('repetidas')" id="tab-repetidas">🔁 Repetidas</button>
+    <button class="anav-btn" onclick="setTab('pacotes')" id="tab-pacotes">📦 Pacotes</button>
+  </nav>
+
+  <!-- Conteúdo -->
+  <main class="album-main" id="album-main">
+    <!-- Renderizado via JS -->
+  </main>
+
+</div>
+
+<!-- ── MODAL: ABRIR PACOTE ── -->
+<div class="modal-overlay" id="modal-pacote">
+  <div class="modal-pacote">
+    <div class="modal-pacote-title">📦 Novo Pacote!</div>
+    <div class="modal-pacote-sub">5 figurinhas reveladas</div>
+    <div class="pacote-cards" id="pacote-cards"></div>
+    <button class="btn-primary" style="margin-top:1.5rem;width:100%" onclick="fecharPacote()">Guardar no álbum</button>
+  </div>
+</div>
+
+<!-- ── MODAL: FIGURINHA AMPLIADA ── -->
+<div class="modal-overlay" id="modal-fig">
+  <div class="modal-fig-wrap">
+    <div id="modal-fig-content"></div>
+    <button class="btn-ghost" style="margin-top:1rem;width:100%" onclick="closeModal('modal-fig')">Fechar</button>
+  </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Carregando álbum…</div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Álbum Copinha 2026",
+  "short_name": "Álbum",
+  "description": "Álbum virtual de figurinhas da Copinha Gil Rodrigues 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0d1a",
+  "theme_color": "#1a0a2e",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshot-wide.png", "sizes": "1280x720", "type": "image/png", "form_factor": "wide", "label": "Álbum Copinha no desktop" },
+    { "src": "screenshot-mobile.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Álbum Copinha no celular" }
+  ]
+}

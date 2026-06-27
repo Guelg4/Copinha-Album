@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Álbum Copinha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos extras só para o admin */
+    body { background: #0a0a1a; }
+    .admin-wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .admin-title { font-family:'Bebas Neue',cursive; font-size:2rem; letter-spacing:3px; color:#f5c842; }
+    .admin-back { font-size:13px; color:#a0a0c0; cursor:pointer; text-decoration:underline; }
+
+    /* Login admin */
+    #admin-login { min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    .admin-login-box {
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px; padding:2rem; width:min(380px,100%);
+    }
+
+    /* Tabs admin */
+    .admin-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .admin-tab {
+      padding:8px 18px; border:none; border-radius:20px;
+      background:rgba(255,255,255,0.06); color:#a0a0c0;
+      font-size:13px; font-weight:500; cursor:pointer;
+      font-family:'Inter',sans-serif; transition:all 0.2s;
+    }
+    .admin-tab:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .admin-tab.active { background:rgba(245,200,66,0.15); color:#f5c842; }
+
+    /* Painel */
+    .admin-panel { display:none; }
+    .admin-panel.active { display:block; }
+
+    .panel-card {
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px; padding:1.5rem; margin-bottom:1.5rem;
+    }
+    .panel-card h3 { font-size:14px; font-weight:600; color:#f5c842; margin-bottom:1rem; }
+
+    .field-row { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin-bottom:0.75rem; }
+    .field-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:140px; }
+    .field-group label { font-size:11px; color:#a0a0c0; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+    .field-group input, .field-group select {
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+      border-radius:8px; padding:9px 12px; color:#fff;
+      font-size:13px; font-family:'Inter',sans-serif; outline:none;
+      transition:border-color 0.2s;
+    }
+    .field-group input:focus, .field-group select:focus { border-color:#f5c842; }
+    .field-group select option { background:#1a1a3a; }
+
+    .btn-save {
+      background:linear-gradient(135deg,#f5c842,#e6a800);
+      color:#000; border:none; border-radius:8px;
+      padding:9px 20px; font-size:13px; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif;
+      transition:opacity 0.2s; white-space:nowrap;
+    }
+    .btn-save:hover { opacity:0.85; }
+
+    .btn-danger {
+      background:rgba(220,50,50,0.15); color:#ff8080;
+      border:1px solid rgba(220,50,50,0.3); border-radius:8px;
+      padding:6px 12px; font-size:12px; cursor:pointer;
+      font-family:'Inter',sans-serif;
+    }
+    .btn-danger:hover { background:rgba(220,50,50,0.25); }
+
+    /* Tabela de jogadores */
+    .jog-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .jog-table th {
+      text-align:left; padding:8px 10px; font-size:11px;
+      color:#a0a0c0; font-weight:600; text-transform:uppercase;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+    .jog-table td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .jog-table tr:hover td { background:rgba(255,255,255,0.03); }
+    .jog-photo-prev { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+    .jog-no-photo { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:16px; }
+
+    /* Tabela usuários */
+    .users-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .users-table th { text-align:left; padding:8px 10px; font-size:11px; color:#a0a0c0; font-weight:600; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.08); }
+    .users-table td { padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .badge-pacote { background:rgba(245,200,66,0.12); color:#f5c842; border-radius:12px; padding:3px 8px; font-size:11px; font-weight:700; }
+
+    .toast {
+      position:fixed; bottom:2rem; right:2rem; z-index:9999;
+      background:#1a3a1a; border:1px solid #2d7a2d; border-radius:10px;
+      padding:12px 18px; font-size:13px; color:#6dd96d;
+      box-shadow:0 4px 16px rgba(0,0,0,0.4);
+      animation:slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    @media(max-width:600px) {
+      .field-row { flex-direction:column; }
+      .field-group { min-width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN ADMIN -->
+<div id="admin-login" class="screen active">
+  <div class="admin-login-box">
+    <div class="login-logo" style="margin-bottom:1.5rem">
+      <div class="login-title" style="font-size:2rem">ADMIN</div>
+      <div class="login-sub">ÁLBUM COPINHA 2026</div>
+    </div>
+    <div class="login-form">
+      <div class="form-group">
+        <label>E-mail admin</label>
+        <input type="email" id="adm-email" placeholder="admin@escola.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="adm-pass" placeholder="••••••••">
+      </div>
+      <div id="adm-err" class="login-err" style="display:none"></div>
+      <button class="btn-primary" onclick="adminLogin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div id="admin-painel" class="screen" style="display:none">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="admin-title">🛠 Painel Admin — Álbum Copinha</div>
+      <div>
+        <span class="admin-back" onclick="adminLogout()">Sair</span>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="setAdminTab('jogadores')">⚽ Jogadores</button>
+      <button class="admin-tab" onclick="setAdminTab('usuarios')">👥 Usuários</button>
+      <button class="admin-tab" onclick="setAdminTab('pacotes')">📦 Pacotes</button>
+    </div>
+
+    <!-- ── ABA JOGADORES ── -->
+    <div class="admin-panel active" id="painel-jogadores">
+      <div class="panel-card">
+        <h3>Adicionar / Editar Jogador</h3>
+        <div class="field-row">
+          <div class="field-group">
+            <label>Time</label>
+            <select id="jog-time">
+              <option value="BRA">🇧🇷 Brasil</option>
+              <option value="ARG">🇦🇷 Argentina</option>
+              <option value="GER">🇩🇪 Alemanha</option>
+              <option value="USA">🇺🇸 EUA</option>
+              <option value="JPN">🇯🇵 Japão</option>
+              <option value="MEX">🇲🇽 México</option>
+              <option value="ENG">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra</option>
+              <option value="ESP">🇪🇸 Espanha</option>
+              <option value="CAN">🇨🇦 Canadá</option>
+              <option value="POR">🇵🇹 Portugal</option>
+              <option value="MAR">🇲🇦 Marrocos</option>
+              <option value="URU">🇺🇾 Uruguai</option>
+              <option value="FRA">🇫🇷 França</option>
+            </select>
+          </div>
+          <div class="field-group" style="max-width:100px">
+            <label>Número</label>
+            <input type="number" id="jog-num" min="1" max="32" placeholder="1">
+          </div>
+          <div class="field-group">
+            <label>Nome do Jogador</label>
+            <input type="text" id="jog-nome" placeholder="Ex: Vinicius Jr.">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>URL da Foto</label>
+            <input type="url" id="jog-foto" placeholder="https://... (cole o link da foto)">
+          </div>
+          <button class="btn-save" onclick="salvarJogador()">Salvar</button>
+        </div>
+        <div id="jog-preview" style="margin-top:0.75rem"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Jogadores cadastrados</h3>
+        <div class="field-row" style="margin-bottom:1rem">
+          <div class="field-group">
+            <label>Filtrar por time</label>
+            <select id="filter-time" onchange="renderJogadoresTable()">
+              <option value="all">Todos</option>
+              <option value="BRA">🇧🇷 Brasil</option>
+              <option value="ARG">🇦🇷 Argentina</option>
+              <option value="GER">🇩🇪 Alemanha</option>
+              <option value="USA">🇺🇸 EUA</option>
+              <option value="JPN">🇯🇵 Japão</option>
+              <option value="MEX">🇲🇽 México</option>
+              <option value="ENG">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra</option>
+              <option value="ESP">🇪🇸 Espanha</option>
+              <option value="CAN">🇨🇦 Canadá</option>
+              <option value="POR">🇵🇹 Portugal</option>
+              <option value="MAR">🇲🇦 Marrocos</option>
+              <option value="URU">🇺🇾 Uruguai</option>
+              <option value="FRA">🇫🇷 França</option>
+            </select>
+          </div>
+        </div>
+        <div id="jog-table-wrap">
+          <table class="jog-table">
+            <thead><tr>
+              <th>Foto</th><th>ID</th><th>Nome</th><th>Ação</th>
+            </tr></thead>
+            <tbody id="jog-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ABA USUÁRIOS ── -->
+    <div class="admin-panel" id="painel-usuarios">
+      <div class="panel-card">
+        <h3>Usuários cadastrados</h3>
+        <table class="users-table">
+          <thead><tr>
+            <th>Nome</th><th>E-mail</th><th>Figurinhas</th><th>Repetidas</th><th>Pacotes</th><th>Ação</th>
+          </tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ABA PACOTES ── -->
+    <div class="admin-panel" id="painel-pacotes">
+      <div class="panel-card">
+        <h3>Dar pacotes a um usuário</h3>
+        <div class="field-row">
+          <div class="field-group">
+            <label>UID do usuário</label>
+            <input type="text" id="pkg-uid" placeholder="Cole o UID do usuário">
+          </div>
+          <div class="field-group" style="max-width:100px">
+            <label>Quantidade</label>
+            <input type="number" id="pkg-qty" value="1" min="1" max="50">
+          </div>
+          <button class="btn-save" onclick="darPacotes()">Dar pacotes</button>
+        </div>
+        <div style="font-size:12px;color:#606080;margin-top:0.5rem">
+          Copie o UID da tabela de Usuários.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* ── Admin auth ── */
+const ADMIN_EMAILS = ['admin@copinha.com']; // troque pelo seu e-mail real
+
+auth.onAuthStateChanged(user => {
+  if (user && ADMIN_EMAILS.includes(user.email)) {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-painel').style.display = 'block';
+    loadAdminData();
+  } else if (user) {
+    auth.signOut();
+    showAdmErr('Conta sem permissão de admin.');
+  }
+});
+
+async function adminLogin() {
+  const email = document.getElementById('adm-email').value.trim();
+  const pass  = document.getElementById('adm-pass').value;
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    showAdmErr('E-mail ou senha incorretos.');
+  }
+}
+function adminLogout() { auth.signOut(); location.reload(); }
+function showAdmErr(msg) {
+  const el = document.getElementById('adm-err');
+  el.style.display = 'block'; el.textContent = msg;
+}
+
+/* ── Cache local ── */
+let jogadoresLocal = {};
+let usuariosLocal  = [];
+
+async function loadAdminData() {
+  await loadJogadoresAdmin();
+  await loadUsuariosAdmin();
+  renderJogadoresTable();
+  renderUsuariosTable();
+}
+
+/* ── Jogadores ── */
+async function loadJogadoresAdmin() {
+  const snap = await db.collection('jogadores').get();
+  jogadoresLocal = {};
+  snap.forEach(d => { jogadoresLocal[d.id] = d.data(); });
+}
+
+async function salvarJogador() {
+  const cod   = document.getElementById('jog-time').value;
+  const num   = parseInt(document.getElementById('jog-num').value);
+  const nome  = document.getElementById('jog-nome').value.trim();
+  const foto  = document.getElementById('jog-foto').value.trim();
+
+  if (!num || !nome) { toast('Preencha o número e o nome.', true); return; }
+
+  const id = `${cod}-${num}`;
+  await db.collection('jogadores').doc(id).set({ nome, foto: foto || '' }, { merge: true });
+  jogadoresLocal[id] = { nome, foto };
+  renderJogadoresTable();
+  toast(`✅ ${id} salvo!`);
+
+  // Limpa campos
+  document.getElementById('jog-num').value  = '';
+  document.getElementById('jog-nome').value = '';
+  document.getElementById('jog-foto').value = '';
+  document.getElementById('jog-preview').innerHTML = '';
+}
+
+function renderJogadoresTable() {
+  const filtro = document.getElementById('filter-time').value;
+  const tbody  = document.getElementById('jog-tbody');
+  const ids    = Object.keys(jogadoresLocal)
+    .filter(id => filtro === 'all' || id.startsWith(filtro + '-'))
+    .sort((a,b) => {
+      const [cA, nA] = a.split('-'); const [cB, nB] = b.split('-');
+      return cA.localeCompare(cB) || parseInt(nA) - parseInt(nB);
+    });
+
+  tbody.innerHTML = ids.map(id => {
+    const j = jogadoresLocal[id];
+    return `<tr>
+      <td>${j.foto ? `<img class="jog-photo-prev" src="${j.foto}" onerror="this.outerHTML='<div class=jog-no-photo>⚽</div>'">` : '<div class="jog-no-photo">⚽</div>'}</td>
+      <td style="font-weight:600;color:#f5c842">${id}</td>
+      <td>${j.nome}</td>
+      <td>
+        <button class="btn-danger" onclick="editarJogador('${id}')">Editar</button>
+        <button class="btn-danger" onclick="deletarJogador('${id}')" style="margin-left:4px">Excluir</button>
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="4" style="color:#606080;padding:1rem">Nenhum jogador cadastrado.</td></tr>`;
+}
+
+function editarJogador(id) {
+  const [cod, num] = id.split('-');
+  const j = jogadoresLocal[id];
+  document.getElementById('jog-time').value = cod;
+  document.getElementById('jog-num').value  = num;
+  document.getElementById('jog-nome').value = j.nome;
+  document.getElementById('jog-foto').value = j.foto || '';
+  window.scrollTo(0, 0);
+}
+
+async function deletarJogador(id) {
+  if (!confirm(`Excluir ${id}?`)) return;
+  await db.collection('jogadores').doc(id).delete();
+  delete jogadoresLocal[id];
+  renderJogadoresTable();
+  toast(`🗑 ${id} excluído`);
+}
+
+/* Pré-visualiza foto ao digitar URL */
+document.getElementById('jog-foto').addEventListener('input', function() {
+  const prev = document.getElementById('jog-preview');
+  if (this.value) {
+    prev.innerHTML = `<img src="${this.value}" style="height:80px;border-radius:8px;border:1px solid rgba(255,255,255,0.1)" onerror="this.style.display='none'">`;
+  } else { prev.innerHTML = ''; }
+});
+
+/* ── Usuários ── */
+async function loadUsuariosAdmin() {
+  const snap = await db.collection('users').get();
+  usuariosLocal = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+}
+
+function renderUsuariosTable() {
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = usuariosLocal.map(u => `<tr>
+    <td style="font-weight:600">${u.nome || '—'}</td>
+    <td style="color:#a0a0c0;font-size:12px">${u.email || '—'}</td>
+    <td>${(u.figurinhas || []).length}</td>
+    <td>${Object.keys(u.repetidas || {}).length}</td>
+    <td><span class="badge-pacote">${u.pacotes || 0}</span></td>
+    <td>
+      <button class="btn-save" style="padding:5px 10px;font-size:11px" onclick="copiarUID('${u.uid}')">Copiar UID</button>
+    </td>
+  </tr>`).join('') || `<tr><td colspan="6" style="color:#606080;padding:1rem">Nenhum usuário.</td></tr>`;
+}
+
+function copiarUID(uid) {
+  navigator.clipboard.writeText(uid);
+  document.getElementById('pkg-uid').value = uid;
+  setAdminTab('pacotes');
+  toast('UID copiado e colado!');
+}
+
+/* ── Pacotes ── */
+async function darPacotes() {
+  const uid = document.getElementById('pkg-uid').value.trim();
+  const qty = parseInt(document.getElementById('pkg-qty').value);
+  if (!uid || !qty) { toast('Preencha o UID e a quantidade.', true); return; }
+  await db.collection('users').doc(uid).update({
+    pacotes: firebase.firestore.FieldValue.increment(qty)
+  });
+  toast(`✅ ${qty} pacote(s) adicionado(s)!`);
+  await loadUsuariosAdmin();
+  renderUsuariosTable();
+}
+
+/* ── Tabs ── */
+function setAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['jogadores','usuarios','pacotes'];
+  tabs.forEach((t,i) => { if(t===tab) document.querySelectorAll('.admin-tab')[i].classList.add('active'); });
+  document.getElementById('painel-' + tab).classList.add('active');
+}
+
+/* ── Toast ── */
+function toast(msg, erro) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.background = erro ? '#3a1a1a' : '#1a3a1a';
+  t.style.borderColor = erro ? '#7a2d2d' : '#2d7a2d';
+  t.style.color = erro ? '#ff8080' : '#6dd96d';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>
