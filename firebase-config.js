@@ -2,7 +2,7 @@
    firebase-config.js — Álbum Copinha
    ========================================================= */
 const firebaseConfig = {
-  apiKey:            "AIzaSyDhi3PA09FHq_IZ8tM1HpnK7R4lGt3mVpQ",
+  apiKey:            "AIzaSyDhi3PAO9FHq_IZ8tM1HpnK7R4lGt3mVpQ",
   authDomain:        "album-copinha.firebaseapp.com",
   projectId:         "album-copinha",
   storageBucket:     "album-copinha.firebasestorage.app",
